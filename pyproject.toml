@@ -1,0 +1,30 @@
+[project]
+name = "fjnu-agent"
+version = "0.1.0"
+description = "基于 RAG 的知识库问答 Agent"
+requires-python = ">=3.12"
+dependencies = [
+    "openai>=3.8.0",
+    "python-dotenv>=1.2.3",
+    "pydantic-settings>=2.15.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "deepeval>=4.2.2",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "pytest-xdist>=3.8.0",
+    "pytest-repeat>=0.9.4",
+    "pytest-rerunfailures>=16.6.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.uv]
+# 暂无 src 包，先按虚拟项目管理依赖；有代码后改为可构建包
+package = false
+# 只用 uv 自管的 Python，避免落到系统的 conda 解释器上
+python-preference = "only-managed"

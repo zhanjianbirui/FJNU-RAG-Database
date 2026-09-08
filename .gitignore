@@ -1,0 +1,8 @@
+.venv/
+.DS_Store
+.env
+__pycache__/
+vector_store/
+.deepeval/
+.deepeval-cache.json
+.env.local
