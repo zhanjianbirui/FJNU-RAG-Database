@@ -6,3 +6,6 @@ vector_store/
 .deepeval/
 .deepeval-cache.json
 .env.local
+.coverage
+htmlcov/
+coverage.xml

@@ -1,20 +1,20 @@
 ## 1. 骨架与配置
 
-- [ ] 1.1 建立 `src/kbwb/` 模块结构（`config/`、`providers/`、`acquire/`、`process/`、`profile/`、`kernel/`、`qa/`、`server/`、`eval/`）与 `tests/` 镜像结构，验证 `uv run python -c "import kbwb"` 成功
-- [ ] 1.2 在 `pyproject.toml` 加入运行时依赖（`scrapling`、`fastapi`、`uvicorn`、`chromadb`、`bm25s`、中文分词库、`pyyaml`、`typer`）与可选依赖组 `local-models`（`sentence-transformers`）、`ocr`，验证 `uv sync --extra dev` 成功且各包可导入。结构化文档解析库待 6.0 对比后加入
-- [ ] 1.3 用 pydantic-settings 实现环境配置模型（provider 选型与凭据、数据根目录、监听地址、切分与检索默认值、各类阈值），验证缺失必填项时抛出指明变量名的错误的单元测试通过
-- [ ] 1.4 实现知识库存储布局与 `kb_id` 解析（`<data_root>/<kb_id>/{raw,md,index}`），验证目录创建、路径穿越拒绝的单元测试通过
-- [ ] 1.5 定义站点配置 schema 与 YAML 加载校验，验证非法配置在加载阶段报出字段路径的单元测试通过
-- [ ] 1.6 扩充 `.env.example` 覆盖全部新增变量，验证按其填写后 1.3 的配置加载通过
+- [x] 1.1 建立 `src/kbwb/` 模块结构（`config/`、`providers/`、`acquire/`、`process/`、`profile/`、`kernel/`、`qa/`、`server/`、`eval/`）与 `tests/` 镜像结构，验证 `uv run python -c "import kbwb"` 成功
+- [x] 1.2 在 `pyproject.toml` 加入运行时依赖（`scrapling`、`fastapi`、`uvicorn`、`chromadb`、`bm25s`、中文分词库、`pyyaml`、`typer`）与可选依赖组 `local-models`（`sentence-transformers`）、`ocr`，验证 `uv sync --extra dev` 成功且各包可导入。结构化文档解析库待 6.0 对比后加入
+- [x] 1.3 用 pydantic-settings 实现环境配置模型（provider 选型与凭据、数据根目录、监听地址、切分与检索默认值、各类阈值），验证缺失必填项时抛出指明变量名的错误的单元测试通过
+- [x] 1.4 实现知识库存储布局与 `kb_id` 解析（`<data_root>/<kb_id>/{raw,md,index}`），验证目录创建、路径穿越拒绝的单元测试通过
+- [x] 1.5 定义站点配置 schema 与 YAML 加载校验，验证非法配置在加载阶段报出字段路径的单元测试通过
+- [x] 1.6 扩充 `.env.example` 覆盖全部新增变量，验证按其填写后 1.3 的配置加载通过
 
 ## 2. 模型 provider
 
-- [ ] 2.1 先写 `ChatProvider` / `EmbeddingProvider` 契约测试（含未知 provider 名称在启动时报错并列出可用名称），验证测试因未实现而失败
-- [ ] 2.2 定义两个接口与按名注册表，验证 2.1 契约测试转为通过
-- [ ] 2.3 实现基于 OpenAI SDK 的 chat/embedding provider，以 `base_url` + 模型名 + 凭据变量区分 OpenAI 与 DeepSeek，验证两种配置的集成测试（录制响应）通过
-- [ ] 2.4 实现本地 Sentence-Transformers embedding provider 并纳入可选依赖组，验证无外网条件下嵌入成功的测试通过
-- [ ] 2.5 实现退避重试与错误分类，验证限流重试成功、重试耗尽返回可区分错误、不返回空向量冒充成功的单元测试通过
-- [ ] 2.6 实现凭据校验与日志脱敏，验证认证失败信息不含凭据任何字符的单元测试通过
+- [x] 2.1 先写 `ChatProvider` / `EmbeddingProvider` 契约测试（含未知 provider 名称在启动时报错并列出可用名称），验证测试因未实现而失败
+- [x] 2.2 定义两个接口与按名注册表，验证 2.1 契约测试转为通过
+- [x] 2.3 实现基于 OpenAI SDK 的 chat/embedding provider，以 `base_url` + 模型名 + 凭据变量区分 OpenAI 与 DeepSeek，验证两种配置的集成测试（录制响应）通过
+- [x] 2.4 实现本地 Sentence-Transformers embedding provider 并纳入可选依赖组，验证无外网条件下嵌入成功的测试通过
+- [x] 2.5 实现退避重试与错误分类，验证限流重试成功、重试耗尽返回可区分错误、不返回空向量冒充成功的单元测试通过
+- [x] 2.6 实现凭据校验与日志脱敏，验证认证失败信息不含凭据任何字符的单元测试通过
 
 ## 3. 站点分析
 

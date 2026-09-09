@@ -7,12 +7,33 @@ dependencies = [
     "openai>=3.8.0",
     "python-dotenv>=1.2.3",
     "pydantic-settings>=2.15.0",
+    # 语料获取
+    "scrapling>=0.3.7",
+    # 本地工作台服务
+    "fastapi>=0.122.0",
+    "uvicorn>=0.41.0",
+    "typer>=0.20.0",
+    # 检索
+    "chromadb>=1.4.0",
+    "bm25s>=0.2.14",
+    # 中文分词（BM25 通道的文号原子化所需，见 design.md）
+    "jieba>=0.42.1",
+    # 站点配置
+    "pyyaml>=6.0.3",
+    # 结构化文档解析库待任务 6.0 对比 Docling 与 MinerU 后加入
 ]
 
 [project.optional-dependencies]
+local-models = [
+    "sentence-transformers>=5.1.2",
+]
+ocr = [
+    "rapidocr-onnxruntime>=1.4.4",
+]
 dev = [
     "deepeval>=4.2.2",
     "pytest>=9.1.1",
+    "pytest-cov>=7.0.0",
     "pytest-asyncio>=1.4.0",
     "pytest-xdist>=3.8.0",
     "pytest-repeat>=0.9.4",
@@ -23,8 +44,15 @@ dev = [
 testpaths = ["tests"]
 asyncio_mode = "auto"
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kbwb"]
+
 [tool.uv]
-# 暂无 src 包，先按虚拟项目管理依赖；有代码后改为可构建包
-package = false
+# 已有 src/kbwb，按可构建包管理，使 `uv run` 能直接 import kbwb
+package = true
 # 只用 uv 自管的 Python，避免落到系统的 conda 解释器上
 python-preference = "only-managed"
