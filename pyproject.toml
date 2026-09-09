@@ -9,6 +9,8 @@ dependencies = [
     "pydantic-settings>=2.15.0",
     # 语料获取
     "scrapling>=0.3.7",
+    # 站点采样的 HTTP 抓取（爬虫的字段抽取在任务 4.3 走 scrapling）
+    "httpx>=0.28.1",
     # 本地工作台服务
     "fastapi>=0.122.0",
     "uvicorn>=0.41.0",
@@ -22,6 +24,9 @@ dependencies = [
     "pyyaml>=6.0.3",
     # 结构化文档解析库待任务 6.0 对比 Docling 与 MinerU 后加入
 ]
+
+[project.scripts]
+kbwb = "kbwb.server.cli:app"
 
 [project.optional-dependencies]
 local-models = [

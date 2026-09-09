@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>知识库工作台</title>
+<style>
+:root{
+  --bg:#f7f7f5; --panel:#fff; --ink:#1c1b19; --muted:#6b6862; --line:#e3e1dc;
+  --accent:#3a6b4f; --accent-soft:#e8f0eb; --warn:#8a5a1e; --warn-soft:#fbf1e2;
+  --err:#9b3232; --err-soft:#fbeaea; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#191817; --panel:#232120; --ink:#eceae6; --muted:#9a958d; --line:#37342f;
+  --accent:#7fb894; --accent-soft:#25332c; --warn:#d9a760; --warn-soft:#33291a;
+  --err:#e08585; --err-soft:#341f1f;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+.wrap{max-width:940px;margin:0 auto;padding:32px 20px 80px}
+header{margin-bottom:28px}
+h1{font-size:21px;margin:0 0 6px;letter-spacing:.01em}
+.sub{color:var(--muted);font-size:13.5px;margin:0}
+.stage{display:inline-block;margin-top:10px;padding:3px 9px;border-radius:4px;
+  background:var(--warn-soft);color:var(--warn);font-size:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:18px}
+.card h2{font-size:14px;margin:0 0 16px;color:var(--muted);font-weight:600;letter-spacing:.04em}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}
+input{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:6px;
+  background:var(--bg);color:var(--ink);font-size:14px;font-family:inherit}
+input:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.row{display:grid;grid-template-columns:1fr 260px 110px;gap:12px;margin-bottom:14px}
+.hint{font-size:12px;color:var(--muted);margin:-8px 0 16px}
+button{background:var(--accent);color:#fff;border:0;border-radius:6px;padding:9px 20px;
+  font-size:14px;font-family:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+.note{padding:11px 13px;border-radius:6px;font-size:13px;margin-bottom:16px}
+.note.err{background:var(--err-soft);color:var(--err)}
+.note.warn{background:var(--warn-soft);color:var(--warn)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-weight:600;color:var(--muted);font-size:12px;
+  padding:0 10px 8px 0;border-bottom:1px solid var(--line)}
+td{padding:9px 10px 9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--bg);
+  padding:2px 5px;border-radius:4px;word-break:break-all}
+.bar{display:inline-block;width:52px;height:5px;border-radius:3px;background:var(--line);
+  vertical-align:middle;margin-right:7px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent)}
+.manual{color:var(--warn)}
+.alt{color:var(--muted);font-size:12px;margin-top:5px;line-height:1.7}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:14px;
+  overflow-x:auto;font-family:var(--mono);font-size:12.5px;margin:0;line-height:1.65}
+.urls{list-style:none;padding:0;margin:0;font-size:12.5px}
+.urls li{padding:5px 0;border-bottom:1px solid var(--line);color:var(--muted)}
+.urls li:last-child{border-bottom:0}
+.urls a{color:var(--ink);font-family:var(--mono);text-decoration:none}
+.urls a:hover{text-decoration:underline}
+.stats{display:flex;gap:22px;margin-bottom:14px;font-size:13px}
+.stats b{font-size:19px;font-weight:600;display:block;line-height:1.3}
+.hidden{display:none}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.4);
+  border-top-color:#fff;border-radius:50%;animation:r .7s linear infinite;margin-right:7px;
+  vertical-align:-1px}
+@keyframes r{to{transform:rotate(360deg)}}
+@media(max-width:720px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>知识库工作台</h1>
+  <p class="sub">给一个栏目列表页，自动推断出正文、标题、日期、部门、附件的抽取规则。</p>
+  <span class="stage">开发骨架 · 目前只接入了「站点分析」，爬取与建库尚未实现</span>
+</header>
+
+<div class="card">
+  <h2>数据获取与分析</h2>
+  <div class="row">
+    <div>
+      <label for="url">栏目入口 URL</label>
+      <input id="url" placeholder="https://ccs.fjnu.edu.cn/kydt/list.htm"
+             value="https://ccs.fjnu.edu.cn/kydt/list.htm">
+    </div>
+    <div>
+      <label for="contact">联系方式（写进 User-Agent）</label>
+      <input id="contact" placeholder="mailto:you@example.edu.cn" value="https://github.com/kbwb">
+    </div>
+    <div>
+      <label for="n">样本数</label>
+      <input id="n" type="number" min="1" max="30" value="6">
+    </div>
+  </div>
+  <p class="hint">
+    请填栏目<b>列表页</b>而非站点首页——首页的链接指向各栏目列表，不是详情页。
+    抓取遵守 robots.txt，每次请求间隔 2 秒，所以 6 个样本约需 15 秒。
+  </p>
+  <button id="go">开始分析</button>
+</div>
+
+<div id="msg"></div>
+
+<div id="out" class="hidden">
+  <div class="card">
+    <h2>采样结果</h2>
+    <div class="stats">
+      <div><b id="s-ok">0</b><span class="sub">成功</span></div>
+      <div><b id="s-skip">0</b><span class="sub">被 robots 跳过</span></div>
+      <div><b id="s-fail">0</b><span class="sub">失败</span></div>
+    </div>
+    <ul class="urls" id="urls"></ul>
+  </div>
+
+  <div class="card">
+    <h2>推断出的抽取规则</h2>
+    <table>
+      <thead><tr><th style="width:96px">字段</th><th style="width:120px">命中率</th><th>选择器</th></tr></thead>
+      <tbody id="fields"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>配置草稿</h2>
+    <pre id="draft"></pre>
+  </div>
+</div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const LABELS = {body:"正文", title:"标题", date:"发布日期", department:"发布部门", attachment:"附件"};
+
+function note(kind, text){ $("msg").innerHTML = `<div class="note ${kind}">${text}</div>`; }
+function clearNote(){ $("msg").innerHTML = ""; }
+
+function renderUrls(data){
+  const rows = [];
+  for (const p of data.sampled)
+    rows.push(`<li><a href="${p.url}" target="_blank" rel="noreferrer">${p.url}</a> · ${p.bytes} 字节</li>`);
+  for (const s of data.skipped)
+    rows.push(`<li>跳过 <code>${s.url}</code> — ${s.reason}${s.rule ? " · " + s.rule : ""}</li>`);
+  for (const f of data.failures)
+    rows.push(`<li>失败 <code>${f.url}</code> — ${f.reason}</li>`);
+  $("urls").innerHTML = rows.join("") || "<li>无</li>";
+}
+
+function renderFields(fields){
+  $("fields").innerHTML = fields.map(f => {
+    const name = LABELS[f.field] || f.field;
+    if (f.needs_manual)
+      return `<tr><td>${name}</td><td class="manual">需人工指定</td>
+              <td class="alt">全部样本中都未定位到该字段</td></tr>`;
+    const top = f.candidates[0];
+    const pct = Math.round(top.hit_rate * 100);
+    const alts = f.candidates.slice(1, 4)
+      .map(c => `${c.selector} (${Math.round(c.hit_rate*100)}%)`).join("　");
+    return `<tr>
+      <td>${name}</td>
+      <td><span class="bar"><i style="width:${pct}%"></i></span>${pct}%</td>
+      <td><code>${top.selector}</code>
+        ${alts ? `<div class="alt">其他候选：${alts}</div>` : ""}</td>
+    </tr>`;
+  }).join("");
+}
+
+$("go").onclick = async () => {
+  const btn = $("go");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>分析中，请稍候…';
+  clearNote();
+  $("out").classList.add("hidden");
+  try {
+    const res = await fetch("/api/site-analysis", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        entry_url: $("url").value.trim(),
+        contact: $("contact").value.trim(),
+        max_samples: Number($("n").value)
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      const d = data.detail;
+      note("err", "分析失败：" + (typeof d === "string" ? d : JSON.stringify(d)));
+      return;
+    }
+    renderUrls(data);
+    renderFields(data.fields);
+    $("s-ok").textContent = data.sampled.length;
+    $("s-skip").textContent = data.skipped.length;
+    $("s-fail").textContent = data.failures.length;
+    $("draft").textContent = data.draft_yaml;
+    $("out").classList.remove("hidden");
+    if (!data.sampled.length)
+      note("warn", "一个样本都没采到。可能填的是站点首页而非栏目列表页，或该栏目的链接结构不常见。");
+  } catch (e) {
+    note("err", "请求失败：" + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "开始分析";
+  }
+};
+</script>
+</body>
+</html>
