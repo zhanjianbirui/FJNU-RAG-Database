@@ -14,7 +14,7 @@ import lxml.html
 import pytest
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "ccs"
-NAMES = ("home", "list", "article", "person")
+NAMES = ("home", "list", "article", "person", "article_multiblock")
 
 
 def _doc(name):

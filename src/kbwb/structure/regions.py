@@ -92,9 +92,21 @@ def _extract_body_text(html: str) -> str:
     return " ".join(text.split()) if text else ""
 
 
+def _squeeze(text: str) -> str:
+    """删去全部空白后比对。
+
+    提取器按块输出正文，段与段之间留有换行；DOM 的 ``text_content()`` 则把
+    相邻块直接连在一起。中文不以空格分词，两侧的空白差异纯属格式噪声，
+    保留它会让多段落文章的特征前缀在 DOM 文本中永远找不到——单段落文章
+    因此能匹配上，多段落的却匹配不上。
+    """
+    return "".join(text.split())
+
+
 def _locate(document, text: str):
     """把提取到的正文文本映射回最小的包含它的 DOM 元素。"""
-    needle = text[:_NEEDLE_CHARS]
+    squeezed = _squeeze(text)
+    needle = squeezed[:_NEEDLE_CHARS]
     if not needle:
         return None
     best = None
@@ -102,8 +114,8 @@ def _locate(document, text: str):
     for node in document.iter():
         if not isinstance(node.tag, str):
             continue
-        node_text = text_of(node)
-        if len(node_text) < len(text) * _MIN_CONTAINMENT or needle not in node_text:
+        node_text = _squeeze(text_of(node))
+        if len(node_text) < len(squeezed) * _MIN_CONTAINMENT or needle not in node_text:
             continue
         if best_length is None or len(node_text) < best_length:
             best, best_length = node, len(node_text)
@@ -134,7 +146,7 @@ def _detect_body(document, html: str) -> Region:
     return Region(
         type=RegionType.ARTICLE_BODY,
         selector=unique_selector(document, element),
-        confidence=_body_confidence(len(text), len(text_of(element))),
+        confidence=_body_confidence(len(_squeeze(text)), len(_squeeze(text_of(element)))),
     )
 
 

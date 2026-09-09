@@ -22,5 +22,11 @@
     "fetched": "2026-09-09",
     "description": "教师个人页（许力 学历职称：博士，教授，博士生导师 研究领域：网络与数据安全、智能信息处理、大数据与信息化、复杂系统建模与分析）",
     "bytes": 27819
+  },
+  "article_multiblock": {
+    "source_url": "https://ccs.fjnu.edu.cn/a0/e6/c16807a434406/page.htm",
+    "fetched": "2026-09-09",
+    "description": "多段落文章详情页（正文分多个块，段间在提取结果中产生空格）",
+    "bytes": 16232
   }
 }

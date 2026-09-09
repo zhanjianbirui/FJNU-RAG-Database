@@ -288,3 +288,40 @@ class TestArticleListScoping:
           <b><a href="/5">五</a></b><i><a href="/6">六</a></i>
         </div></body></html>"""
         assert segment_page(html).of(RegionType.ARTICLE_LIST) is None
+
+
+class TestMultiBlockBody:
+    """回归：多段落文章的正文映射曾整体失败。
+
+    提取器按块输出正文，段间留有换行，归一后成为空格；而 DOM 的
+    text_content() 把相邻块直接连在一起，中文之间没有空格。特征前缀因此
+    在 DOM 文本中找不到——单段落文章侥幸匹配得上，多段落的匹配不上。
+    浏览器上实跑三个详情页，两个正文识别失败时发现。
+    """
+
+    def test_multiblock_body_is_located(self):
+        region = segment_page(_html("article_multiblock")).of(RegionType.ARTICLE_BODY)
+        assert region.confidence > 0.0, "多段落文章的正文仍未被定位"
+        assert region.note is None
+
+    def test_multiblock_selector_finds_the_article(self):
+        region = segment_page(_html("article_multiblock")).of(RegionType.ARTICLE_BODY)
+        doc = lxml.html.fromstring(_html("article_multiblock"))
+        text = " ".join(doc.cssselect(region.selector)[0].text_content().split())
+        assert "青年教师科研发展的经验分享" in text
+
+    def test_multiblock_body_excludes_navigation(self):
+        region = segment_page(_html("article_multiblock")).of(RegionType.ARTICLE_BODY)
+        doc = lxml.html.fromstring(_html("article_multiblock"))
+        text = " ".join(doc.cssselect(region.selector)[0].text_content().split())
+        assert "学院概况" not in text
+
+    def test_whitespace_only_difference_does_not_break_matching(self):
+        """构造版本：同一段文字，一个分块一个不分块，都应能定位。"""
+        blocks = "<div class='wp_articlecontent'><p>%s</p><p>%s</p></div>" % (
+            "办理学籍证明需携带身份证原件及复印件各一份。" * 3,
+            "到教务处窗口提交申请，三个工作日内办结。" * 3,
+        )
+        html = f"<html><body><div class='nav'><a href='/'>首页</a></div>{blocks}</body></html>"
+        region = segment_page(html).of(RegionType.ARTICLE_BODY)
+        assert region.confidence > 0.0

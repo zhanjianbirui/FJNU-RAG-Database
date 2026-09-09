@@ -12,6 +12,7 @@ from fastapi.responses import FileResponse
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 
 from kbwb.server.analysis import DEFAULT_MAX_SAMPLES, SiteAnalysisService
+from kbwb.server.structure_preview import StructurePreviewService
 
 __all__ = ["create_app"]
 
@@ -47,8 +48,11 @@ class SiteAnalysisRequest(BaseModel):
     max_samples: int = Field(default=DEFAULT_MAX_SAMPLES, ge=1, le=MAX_SAMPLES_CEILING)
 
 
-def create_app(*, analysis_service: Any = None) -> FastAPI:
+def create_app(
+    *, analysis_service: Any = None, preview_service: Any = None
+) -> FastAPI:
     service = analysis_service or SiteAnalysisService()
+    preview = preview_service or StructurePreviewService()
     app = FastAPI(title="kbwb 知识库工作台", docs_url="/api/docs", openapi_url="/api/openapi.json")
 
     @app.get("/", include_in_schema=False)
@@ -71,6 +75,20 @@ def create_app(*, analysis_service: Any = None) -> FastAPI:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         except Exception as exc:
             # 目标站点侧的问题不是本服务的内部错误，用 502 区分开
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @app.post("/api/structure-preview")
+    def structure_preview(request: Annotated[SiteAnalysisRequest, Body()]) -> dict:
+        """临时预览：展示分区识别与模板聚类的结果，供人工核对识别质量。"""
+        try:
+            return preview.preview(
+                entry_url=request.entry_url,
+                contact=request.contact,
+                max_samples=request.max_samples,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except Exception as exc:
             raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     return app
