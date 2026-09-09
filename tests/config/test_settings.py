@@ -112,3 +112,61 @@ class TestImmutability:
         settings = _load(**_REQUIRED)
         with pytest.raises(ValidationError):
             settings.port = 1234
+
+
+class TestProbeSettings:
+    """站点结构探测的配置项。
+
+    site-structure 规格要求探测在可配置的请求总数上限内完成，模板聚类的
+    相似度阈值与分区置信度阈值同样需要可调——它们都是启发式判据，写死会
+    让不同结构的站点无法适配。
+    """
+
+    def test_request_budget_default_is_modest(self):
+        # 探测的意义在于比全站爬取便宜一个数量级，默认预算应体现这一点
+        assert 0 < _load(**_REQUIRED).probe_request_budget <= 200
+
+    def test_request_budget_must_be_positive(self):
+        with pytest.raises(ConfigError) as exc:
+            _load(**_REQUIRED, probe_request_budget=0)
+        assert "PROBE_REQUEST_BUDGET" in str(exc.value)
+
+    def test_samples_per_template_default(self):
+        assert _load(**_REQUIRED).samples_per_template >= 1
+
+    def test_samples_per_template_must_be_positive(self):
+        with pytest.raises(ConfigError) as exc:
+            _load(**_REQUIRED, samples_per_template=0)
+        assert "SAMPLES_PER_TEMPLATE" in str(exc.value)
+
+    def test_template_similarity_threshold_in_unit_interval(self):
+        assert 0 < _load(**_REQUIRED).template_similarity_threshold <= 1
+
+    def test_template_similarity_threshold_rejects_out_of_range(self):
+        with pytest.raises(ConfigError) as exc:
+            _load(**_REQUIRED, template_similarity_threshold=1.5)
+        assert "TEMPLATE_SIMILARITY_THRESHOLD" in str(exc.value)
+
+    def test_region_confidence_threshold_in_unit_interval(self):
+        assert 0 < _load(**_REQUIRED).region_confidence_threshold <= 1
+
+    def test_region_confidence_threshold_rejects_zero(self):
+        with pytest.raises(ConfigError) as exc:
+            _load(**_REQUIRED, region_confidence_threshold=0)
+        assert "REGION_CONFIDENCE_THRESHOLD" in str(exc.value)
+
+    def test_budget_must_allow_at_least_one_sample_round(self):
+        """预算小于一轮模板采样所需时，探测必然半途而废——在加载期就拦下。"""
+        with pytest.raises(ConfigError) as exc:
+            _load(**_REQUIRED, probe_request_budget=2, samples_per_template=5)
+        message = str(exc.value)
+        assert "PROBE_REQUEST_BUDGET" in message and "SAMPLES_PER_TEMPLATE" in message
+
+    def test_probe_values_read_from_environment(self, monkeypatch):
+        monkeypatch.setenv("CHAT_MODEL", "m")
+        monkeypatch.setenv("EMBEDDING_MODEL", "e")
+        monkeypatch.setenv("PROBE_REQUEST_BUDGET", "45")
+        monkeypatch.setenv("TEMPLATE_SIMILARITY_THRESHOLD", "0.82")
+        settings = load_settings(_env_file=None)
+        assert settings.probe_request_budget == 45
+        assert settings.template_similarity_threshold == 0.82

@@ -1,0 +1,26 @@
+{
+  "home": {
+    "source_url": "https://ccs.fjnu.edu.cn/main.htm",
+    "fetched": "2026-09-09",
+    "description": "站点首页，导航来源",
+    "bytes": 33152
+  },
+  "list": {
+    "source_url": "https://ccs.fjnu.edu.cn/kydt/list.htm",
+    "fetched": "2026-09-09",
+    "description": "科研动态栏目列表页",
+    "bytes": 25937
+  },
+  "article": {
+    "source_url": "https://ccs.fjnu.edu.cn/a7/60/c16807a436064/page.htm",
+    "fetched": "2026-09-09",
+    "description": "文章详情页",
+    "bytes": 18002
+  },
+  "person": {
+    "source_url": "https://ccs.fjnu.edu.cn/15/81/c16741a333185/page.htm",
+    "fetched": "2026-09-09",
+    "description": "教师个人页（许力 学历职称：博士，教授，博士生导师 研究领域：网络与数据安全、智能信息处理、大数据与信息化、复杂系统建模与分析）",
+    "bytes": 27819
+  }
+}

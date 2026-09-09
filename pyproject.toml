@@ -20,6 +20,8 @@ dependencies = [
     "bm25s>=0.2.14",
     # 中文分词（BM25 通道的文号原子化所需，见 design.md）
     "jieba>=0.42.1",
+    # 正文提取与去噪（页面分区识别）
+    "trafilatura>=2.0.0",
     # 站点配置
     "pyyaml>=6.0.3",
     # 结构化文档解析库待任务 6.0 对比 Docling 与 MinerU 后加入

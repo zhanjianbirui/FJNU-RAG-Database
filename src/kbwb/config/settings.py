@@ -81,6 +81,14 @@ class Settings(BaseSettings):
     doc_id_density_threshold: float = Field(default=0.1, gt=0.0, lt=1.0)
     min_body_chars: int = Field(default=50, ge=1)
 
+    # --- 站点结构探测 ---------------------------------------------------------
+    # 探测的意义在于比全站爬取便宜一个数量级，预算上限体现这一取向；
+    # 两个阈值都是启发式判据，写死会让结构不同的站点无法适配。
+    probe_request_budget: int = Field(default=60, ge=1)
+    samples_per_template: int = Field(default=3, ge=1)
+    template_similarity_threshold: float = Field(default=0.7, gt=0.0, le=1.0)
+    region_confidence_threshold: float = Field(default=0.5, gt=0.0, le=1.0)
+
     # --- 运行时限制 -----------------------------------------------------------
     max_input_chars: int = Field(default=4000, ge=1)
     rate_limit_per_minute: int = Field(default=30, ge=1)
@@ -101,6 +109,12 @@ class Settings(BaseSettings):
             raise ValueError(
                 "CHUNK_MIN_CHARS 不得大于 CHUNK_MAX_CHARS，"
                 f"当前分别为 {self.chunk_min_chars} 与 {self.chunk_max_chars}"
+            )
+        if self.samples_per_template > self.probe_request_budget:
+            raise ValueError(
+                "PROBE_REQUEST_BUDGET 至少要够一轮模板采样，"
+                f"当前预算 {self.probe_request_budget} 小于 SAMPLES_PER_TEMPLATE "
+                f"{self.samples_per_template}，探测必然半途而废"
             )
         if self.retrieval_top_k > self.retrieval_candidate_k:
             raise ValueError(

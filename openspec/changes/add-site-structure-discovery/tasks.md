@@ -1,10 +1,10 @@
 ## 1. 依赖与骨架
 
-- [ ] 1.1 在 `pyproject.toml` 加入 `trafilatura` 并验证 `uv sync --extra dev` 成功、`import trafilatura` 可用
-- [ ] 1.2 建立 `src/kbwb/structure/` 模块与 `tests/structure/` 镜像结构，验证 `uv run python -c "import kbwb.structure"` 成功
-- [ ] 1.3 在配置模型中加入探测相关项（请求预算上限、模板相似度阈值、每模板采样数、分区置信度阈值），验证缺失或越界时报出环境变量名的单元测试通过
-- [ ] 1.4 扩充 `.env.example` 覆盖新增变量，验证 `.env.example` 与配置模型一致性的既有用例通过
-- [ ] 1.5 准备真实页面夹具：从 `ccs.fjnu.edu.cn` 保存列表页、详情页、人物页各一份至 `tests/fixtures/`，验证夹具含大体量导航、多个同名 class 容器与正文外长文本块
+- [x] 1.1 在 `pyproject.toml` 加入 `trafilatura` 并验证 `uv sync --extra dev` 成功、`import trafilatura` 可用
+- [x] 1.2 建立 `src/kbwb/structure/` 模块与 `tests/structure/` 镜像结构，验证 `uv run python -c "import kbwb.structure"` 成功
+- [x] 1.3 在配置模型中加入探测相关项（请求预算上限、模板相似度阈值、每模板采样数、分区置信度阈值），验证缺失或越界时报出环境变量名的单元测试通过
+- [x] 1.4 扩充 `.env.example` 覆盖新增变量，验证 `.env.example` 与配置模型一致性的既有用例通过
+- [x] 1.5 准备真实页面夹具：从 `ccs.fjnu.edu.cn` 保存列表页、详情页、人物页各一份至 `tests/fixtures/`，验证夹具含大体量导航、多个同名 class 容器与正文外长文本块
 
 ## 2. 页面分区识别
 
